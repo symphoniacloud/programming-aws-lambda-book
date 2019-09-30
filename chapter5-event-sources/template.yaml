@@ -1,0 +1,22 @@
+AWSTemplateFormatVersion: 2010-09-09
+Transform: AWS::Serverless-2016-10-31
+Description: chapter5
+
+Globals:
+  Api:
+    OpenApiVersion: '3.0.1'
+
+Resources:
+  HelloAPIWorldLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: java8
+      MemorySize: 512
+      Handler: book.HelloWorldAPI::handler
+      CodeUri: target/lambda.zip
+      Events:
+        MyApi:
+          Type: Api
+          Properties:
+            Path: /foo
+            Method: get

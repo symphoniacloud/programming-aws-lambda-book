@@ -1,0 +1,52 @@
+AWSTemplateFormatVersion: 2010-09-09
+Transform: AWS::Serverless-2016-10-31
+Description: chapter5-api
+
+Globals:
+  Function:
+    Runtime: java8
+    MemorySize: 512
+    Timeout: 25
+    Environment:
+      Variables:
+        LOCATIONS_TABLE: !Ref LocationsTable
+  Api:
+    OpenApiVersion: '3.0.1'
+
+Resources:
+  LocationsTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: locationName
+        Type: String
+
+  WeatherEventLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: target/lambda.zip
+      Handler: book.api.WeatherEventLambda::handler
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref LocationsTable
+      Events:
+        ApiEvents:
+          Type: Api
+          Properties:
+            Path: /events
+            Method: POST
+
+  WeatherQueryLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: target/lambda.zip
+      Handler: book.api.WeatherQueryLambda::handler
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref LocationsTable
+      Events:
+        ApiEvents:
+          Type: Api
+          Properties:
+            Path: /locations
+            Method: GET
