@@ -1,0 +1,9 @@
+[
+    {
+        "locationName": "Brooklyn, NY",
+        "temperature": 91,
+        "timestamp": "Wrong data type",
+        "latitude": 40.70,
+        "longitude": -73.99
+    }
+]
