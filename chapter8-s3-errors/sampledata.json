@@ -1,0 +1,16 @@
+[
+	{
+		"locationName":"Brooklyn, NY", 
+		"temperature":91, 
+		"timestamp":1564428897, 
+		"latitude": 40.70, 
+		"longitude": -73.99
+	},
+	{
+		"locationName":"Oxford, UK", 
+		"temperature":64, 
+		"timestamp":1564428898, 
+		"latitude": 51.75, 
+		"longitude": -1.25
+	}
+]

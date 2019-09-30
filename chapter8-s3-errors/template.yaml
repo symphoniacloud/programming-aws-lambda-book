@@ -1,0 +1,42 @@
+AWSTemplateFormatVersion: 2010-09-09
+Transform: AWS::Serverless-2016-10-31
+Description: chapter8-s3-errors
+
+Resources:
+  DLQ:
+    Type: AWS::SNS::Topic
+
+  ErrorTriggeringBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub ${AWS::StackName}-${AWS::AccountId}-${AWS::Region}-errortrigger
+
+  S3ErroringLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: java8
+      MemorySize: 512
+      Handler: book.S3ErroringLambda::handler
+      CodeUri: target/lambda.zip
+      DeadLetterQueue:
+        Type: SNS
+        TargetArn: !Ref DLQ
+      Events:
+        S3Event:
+          Type: S3
+          Properties:
+            Bucket: !Ref ErrorTriggeringBucket
+            Events: s3:ObjectCreated:*
+
+  DLQProcessingLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: java8
+      MemorySize: 512
+      Handler: book.DLQProcessingLambda::handler
+      CodeUri: target/lambda.zip
+      Events:
+        SnsEvent:
+          Type: SNS
+          Properties:
+            Topic: !Ref DLQ
