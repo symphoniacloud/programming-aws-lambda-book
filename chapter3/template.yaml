@@ -1,0 +1,18 @@
+AWSTemplateFormatVersion: 2010-09-09
+Transform: AWS::Serverless-2016-10-31
+Description: HelloWorldLambdaJava
+
+Resources:
+
+  HelloWorldLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: HelloWorldJava
+      Timeout: 2
+      Runtime: java8
+      MemorySize: 512
+      Handler: book.EnvVarLambda::handler
+      CodeUri: target/lambda.jar
+      Environment:
+        Variables:
+          DATABASE_URL: my-database-url
