@@ -1,0 +1,89 @@
+AWSTemplateFormatVersion: 2010-09-09
+Transform: AWS::Serverless-2016-10-31
+Description: chapter7-api
+
+Globals:
+  Function:
+    Runtime: java8
+    MemorySize: 512
+    Timeout: 25
+    Environment:
+      Variables:
+        LOCATIONS_TABLE: !Ref LocationsTable
+    Tracing: PassThrough
+  Api:
+    OpenApiVersion: '3.0.1'
+    TracingEnabled: true
+
+Resources:
+
+  LocationsTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: locationName
+        Type: String
+
+  WeatherEventLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: target/lambda.zip
+      Handler: book.api.WeatherEventLambda::handler
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref LocationsTable
+      Events:
+        ApiEvents:
+          Type: Api
+          Properties:
+            Path: /events
+            Method: POST
+
+  WeatherQueryLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: target/lambda.zip
+      Handler: book.api.WeatherQueryLambda::handler
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref LocationsTable
+      Events:
+        ApiEvents:
+          Type: Api
+          Properties:
+            Path: /locations
+            Method: GET
+
+  WeatherEventLambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${WeatherEventLambda}"
+
+  BrooklynWeatherMetricFilter:
+    Type: AWS::Logs::MetricFilter
+    Properties:
+      LogGroupName: !Ref WeatherEventLambdaLogGroup
+      FilterPattern: '{$.message.locationName = "Brooklyn, NY"}'
+      MetricTransformations:
+        - MetricValue: "1"
+          MetricNamespace: WeatherApi
+          MetricName: BrooklynWeatherEventCount
+          DefaultValue: 0
+
+  BrooklynWeatherAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      Namespace: WeatherApi
+      MetricName: BrooklynWeatherEventCount
+      Statistic: Sum
+      ComparisonOperator: LessThanThreshold
+      Threshold: 1
+      Period: 60
+      EvaluationPeriods: 1
+      TreatMissingData: breaching
+      ActionsEnabled: True
+      AlarmActions:
+        - !Ref BrooklynWeatherAlarmTopic
+
+  BrooklynWeatherAlarmTopic:
+    Type: AWS::SNS::Topic
