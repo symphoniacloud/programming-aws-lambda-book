@@ -57,25 +57,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>001-sam-package</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <basedir>${project.parent.basedir}</basedir>
-                            <executable>sam</executable>
-                            <arguments>
-                                <argument>package</argument>
-                                <argument>--s3-bucket</argument>
-                                <argument>${integration.test.code.bucket}</argument>
-                                <argument>--output-template-file</argument>
-                                <argument>${project.build.directory}/packaged-template.yaml</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>002-sam-deploy</id>
+                        <id>001-sam-deploy</id>
                         <phase>pre-integration-test</phase>
                         <goals>
                             <goal>exec</goal>
@@ -85,10 +67,10 @@
                             <executable>sam</executable>
                             <arguments>
                                 <argument>deploy</argument>
+                                <argument>--s3-bucket</argument>
+                                <argument>${integration.test.code.bucket}</argument>
                                 <argument>--stack-name</argument>
                                 <argument>${integration.test.stack.name}</argument>
-                                <argument>--template-file</argument>
-                                <argument>${project.build.directory}/packaged-template.yaml</argument>
                                 <argument>--capabilities</argument>
                                 <argument>CAPABILITY_IAM</argument>
                             </arguments>
