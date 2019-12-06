@@ -19,8 +19,7 @@ $ mvn package
 To deploy:
 
 ```
-$ sam package --s3-bucket $CF_BUCKET --output-template-file target/packaged-template.yaml
-$ sam deploy --template-file target/packaged-template.yaml --stack-name HelloWorldLambdaJava --capabilities CAPABILITY_IAM
+$ sam deploy --s3-bucket $CF_BUCKET --stack-name HelloWorldLambdaJava --capabilities CAPABILITY_IAM
 ```
 
 To test:

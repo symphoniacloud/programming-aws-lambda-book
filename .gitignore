@@ -20,4 +20,7 @@ hs_err_pid*
 *.iml
 target
 outputfile.txt
-packaged-template.yaml
+.classpath
+.factorypath
+.project
+.settings

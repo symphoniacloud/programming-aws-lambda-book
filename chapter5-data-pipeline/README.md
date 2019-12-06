@@ -19,8 +19,7 @@ $ mvn package
 To deploy (feel free to change the name of the stack!):
 
 ```
-$ sam package --s3-bucket $CF_BUCKET --output-template-file ./packaged-template.yaml
-$ sam deploy --template-file ./packaged-template.yaml --stack-name chapter-five-data-pipeline --capabilities CAPABILITY_IAM
+$ sam deploy --s3-bucket $CF_BUCKET --stack-name chapter-five-data-pipeline --capabilities CAPABILITY_IAM
 ```
 
 To test:
