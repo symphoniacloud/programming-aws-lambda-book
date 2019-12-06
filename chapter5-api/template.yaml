@@ -27,8 +27,8 @@ Resources:
       CodeUri: target/lambda.zip
       Handler: book.api.WeatherEventLambda::handler
       Policies:
-      - DynamoDBCrudPolicy:
-          TableName: !Ref LocationsTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref LocationsTable
       Events:
         ApiEvents:
           Type: Api

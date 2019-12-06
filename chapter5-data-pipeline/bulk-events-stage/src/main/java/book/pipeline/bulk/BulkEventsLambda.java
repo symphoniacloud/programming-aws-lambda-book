@@ -48,8 +48,7 @@ public class BulkEventsLambda {
                     objectMapper.readValue(s3is, WeatherEvent[].class);
             s3is.close();
             return Arrays.asList(weatherEvents);
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
