@@ -1,4 +1,4 @@
-# Programming AWS Lambda - ERRATA
+# Programming AWS Lambda - Errata and Updates
 
 ## Chapter 3
 
