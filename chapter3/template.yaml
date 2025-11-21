@@ -9,7 +9,7 @@ Resources:
     Properties:
       FunctionName: HelloWorldJava
       Timeout: 2
-      Runtime: java8.al2
+      Runtime: java21
       MemorySize: 512
       Handler: book.EnvVarLambda::handler
       CodeUri: target/lambda.jar
