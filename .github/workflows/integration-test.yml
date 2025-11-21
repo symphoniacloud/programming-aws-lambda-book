@@ -5,10 +5,6 @@ on:
   push:
     branches:
       - main
-      - 'feature/**'
-  pull_request:
-    branches:
-      - main
 
 permissions:
   id-token: write   # Required for OIDC
