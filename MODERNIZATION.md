@@ -13,6 +13,28 @@
 - Updated runtime from `java8` (deprecated) to `java8.al2`
 - Shortened stack prefixes for S3 bucket name limits
 
+### Phase 1 Complete (November 2025)
+- **Java 21 Runtime**: All pom.xml and template.yaml files updated
+- **Security Updates**: Jackson 2.17.2, Log4j 2.23.1
+- **AWS SDK v2 Migration**: All chapters migrated to SDK v2
+  - DynamoDB (chapters 4, 5-api, 7)
+  - S3, SNS (chapters 5-data-pipeline, 6)
+  - CloudFormation, CloudWatch Logs (chapter 6 integration tests)
+  - X-Ray SDK v2 instrumentor (chapter 7)
+
+### Phase 3 Partial (November 2025)
+- **JUnit 5 Migration**: Chapter 6 tests migrated to JUnit Jupiter 5.10.3
+- **system-stubs**: Replaced system-rules with system-stubs-jupiter 2.1.6
+- **Mockito 5.12.0**: Updated for Java 21 compatibility
+- **S3Event tests**: Fixed to build events programmatically (no Jackson deserialization)
+
+### Known Issues (TODO)
+- **Chapter 6 integration tests**: `stackName` property not being passed correctly to Maven failsafe plugin
+  - The test harness passes `-DstackName=$STACK_NAME` but the forked JVM doesn't receive it
+  - The pom.xml has `<stackName/>` property and `systemPropertyVariables` configuration
+  - Need to debug why the property isn't being interpolated when running with `-pl integration-tests`
+  - Unit tests pass; only integration tests are affected
+
 ---
 
 ## Phase 1: Critical Updates (Do First)
