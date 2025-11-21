@@ -27,9 +27,9 @@ public class PipelineIT {
     private final CloudWatchLogsClient logs = CloudWatchLogsClient.create();
 
     public PipelineIT() {
-        this.stackName = System.getProperty("stackName");
-        if (stackName == null) {
-            throw new RuntimeException("stackName property must be set");
+        this.stackName = System.getenv("STACK_NAME");
+        if (stackName == null || stackName.isEmpty()) {
+            throw new RuntimeException("STACK_NAME environment variable must be set");
         }
     }
 
