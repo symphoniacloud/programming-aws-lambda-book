@@ -14,7 +14,7 @@ Resources:
   S3ErroringLambda:
     Type: AWS::Serverless::Function
     Properties:
-      Runtime: java8
+      Runtime: java8.al2
       MemorySize: 512
       Handler: book.S3ErroringLambda::handler
       CodeUri: target/lambda.zip
@@ -31,7 +31,7 @@ Resources:
   DLQProcessingLambda:
     Type: AWS::Serverless::Function
     Properties:
-      Runtime: java8
+      Runtime: java8.al2
       MemorySize: 512
       Handler: book.DLQProcessingLambda::handler
       CodeUri: target/lambda.zip
