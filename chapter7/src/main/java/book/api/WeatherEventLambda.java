@@ -28,22 +28,22 @@ public class WeatherEventLambda {
 
     public APIGatewayProxyResponseEvent handler(APIGatewayProxyRequestEvent request, Context context) throws IOException {
 
-        final WeatherEvent weatherEvent = objectMapper.readValue(request.getBody(), WeatherEvent.class);
+        var weatherEvent = objectMapper.readValue(request.getBody(), WeatherEvent.class);
 
-        Map<String, AttributeValue> item = new HashMap<>();
+        var item = new HashMap<String, AttributeValue>();
         item.put("locationName", AttributeValue.builder().s(weatherEvent.locationName).build());
         item.put("temperature", AttributeValue.builder().n(String.valueOf(weatherEvent.temperature)).build());
         item.put("timestamp", AttributeValue.builder().n(String.valueOf(weatherEvent.timestamp)).build());
         item.put("longitude", AttributeValue.builder().n(String.valueOf(weatherEvent.longitude)).build());
         item.put("latitude", AttributeValue.builder().n(String.valueOf(weatherEvent.latitude)).build());
 
-        PutItemRequest putItemRequest = PutItemRequest.builder()
+        var putItemRequest = PutItemRequest.builder()
                 .tableName(tableName)
                 .item(item)
                 .build();
         dynamoDB.putItem(putItemRequest);
 
-        HashMap<Object, Object> message = new HashMap<>();
+        var message = new HashMap<Object, Object>();
         message.put("action", "record");
         message.put("locationName", weatherEvent.locationName);
         message.put("temperature", weatherEvent.temperature);
