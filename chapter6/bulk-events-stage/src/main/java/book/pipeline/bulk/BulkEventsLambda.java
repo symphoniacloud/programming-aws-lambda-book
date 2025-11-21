@@ -2,14 +2,14 @@ package book.pipeline.bulk;
 
 import book.pipeline.common.WeatherEvent;
 import com.amazonaws.services.lambda.runtime.events.S3Event;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.event.S3EventNotification;
-import com.amazonaws.services.sns.AmazonSNS;
-import com.amazonaws.services.sns.AmazonSNSClientBuilder;
+import com.amazonaws.services.lambda.runtime.events.models.s3.S3EventNotification;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.sns.SnsClient;
+import software.amazon.awssdk.services.sns.model.PublishRequest;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,15 +22,15 @@ public class BulkEventsLambda {
     private final ObjectMapper objectMapper =
             new ObjectMapper().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
-    private final AmazonSNS sns;
-    private final AmazonS3 s3;
+    private final SnsClient sns;
+    private final S3Client s3;
     private final String snsTopic;
 
     public BulkEventsLambda() {
-        this(AmazonSNSClientBuilder.defaultClient(), AmazonS3ClientBuilder.defaultClient());
+        this(SnsClient.create(), S3Client.create());
     }
 
-    public BulkEventsLambda(AmazonSNS sns, AmazonS3 s3) {
+    public BulkEventsLambda(SnsClient sns, S3Client s3) {
         this.sns = sns;
         this.s3 = s3;
         this.snsTopic = System.getenv(FAN_OUT_TOPIC_ENV);
@@ -57,13 +57,20 @@ public class BulkEventsLambda {
     }
 
     private void publishToSns(String message) {
-        sns.publish(snsTopic, message);
+        sns.publish(PublishRequest.builder()
+                .topicArn(snsTopic)
+                .message(message)
+                .build());
     }
 
     private InputStream getObjectFromS3(S3EventNotification.S3EventNotificationRecord record) {
         String bucket = record.getS3().getBucket().getName();
         String key = record.getS3().getObject().getKey();
-        return s3.getObject(bucket, key).getObjectContent();
+        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                .bucket(bucket)
+                .key(key)
+                .build();
+        return s3.getObject(getObjectRequest);
     }
 
     List<WeatherEvent> readWeatherEvents(InputStream inputStream) {

@@ -1,19 +1,19 @@
 package book.pipeline;
 
-import com.amazonaws.services.cloudformation.AmazonCloudFormation;
-import com.amazonaws.services.cloudformation.AmazonCloudFormationClientBuilder;
-import com.amazonaws.services.cloudformation.model.DescribeStackResourceRequest;
-import com.amazonaws.services.cloudformation.model.DescribeStackResourceResult;
-import com.amazonaws.services.logs.AWSLogs;
-import com.amazonaws.services.logs.AWSLogsClientBuilder;
-import com.amazonaws.services.logs.model.*;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Test;
+import software.amazon.awssdk.services.cloudformation.CloudFormationClient;
+import software.amazon.awssdk.services.cloudformation.model.DescribeStackResourceRequest;
+import software.amazon.awssdk.services.cloudformation.model.DescribeStackResourceResponse;
+import software.amazon.awssdk.services.cloudwatchlogs.CloudWatchLogsClient;
+import software.amazon.awssdk.services.cloudwatchlogs.model.*;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -21,9 +21,9 @@ import java.util.stream.Collectors;
 public class PipelineIT {
 
     private final String stackName;
-    private final AmazonCloudFormation cfn = AmazonCloudFormationClientBuilder.defaultClient();
-    private final AmazonS3 s3 = AmazonS3ClientBuilder.defaultClient();
-    private final AWSLogs logs = AWSLogsClientBuilder.defaultClient();
+    private final CloudFormationClient cfn = CloudFormationClient.create();
+    private final S3Client s3 = S3Client.create();
+    private final CloudWatchLogsClient logs = CloudWatchLogsClient.create();
 
     public PipelineIT() {
         this.stackName = System.getProperty("stackName");
@@ -39,7 +39,10 @@ public class PipelineIT {
         File file = new File(getClass().getResource("/bulk_data.json").getFile());
 
         // 1. Upload bulk_data file to S3
-        s3.putObject(bucketName, key, file);
+        s3.putObject(PutObjectRequest.builder()
+                .bucket(bucketName)
+                .key(key)
+                .build(), Paths.get(file.toURI()));
 
         // 2. Check for executions of SingleEventLambda
         Thread.sleep(30000);
@@ -52,31 +55,44 @@ public class PipelineIT {
         ));
 
         // 3. Delete object from S3 bucket (to allow a clean CloudFormation teardown)
-        s3.deleteObject(bucketName, key);
+        s3.deleteObject(DeleteObjectRequest.builder()
+                .bucket(bucketName)
+                .key(key)
+                .build());
 
         // 4. Delete Lambda log groups
-        logs.deleteLogGroup(new DeleteLogGroupRequest(getLogGroup(singleEventLambda)));
+        logs.deleteLogGroup(DeleteLogGroupRequest.builder()
+                .logGroupName(getLogGroup(singleEventLambda))
+                .build());
         String bulkEventsLambda = resolvePhysicalId("BulkEventsLambda");
-        logs.deleteLogGroup(new DeleteLogGroupRequest(getLogGroup(bulkEventsLambda)));
+        logs.deleteLogGroup(DeleteLogGroupRequest.builder()
+                .logGroupName(getLogGroup(bulkEventsLambda))
+                .build());
     }
 
     private String resolvePhysicalId(String logicalId) {
-        DescribeStackResourceRequest request = new DescribeStackResourceRequest()
-                .withStackName(stackName)
-                .withLogicalResourceId(logicalId);
-        DescribeStackResourceResult result = cfn.describeStackResource(request);
-        return result.getStackResourceDetail().getPhysicalResourceId();
+        DescribeStackResourceRequest request = DescribeStackResourceRequest.builder()
+                .stackName(stackName)
+                .logicalResourceId(logicalId)
+                .build();
+        DescribeStackResourceResponse response = cfn.describeStackResource(request);
+        return response.stackResourceDetail().physicalResourceId();
     }
 
     private Set<String> getLogMessages(String lambdaName) {
         String logGroup = getLogGroup(lambdaName);
 
-        return logs.describeLogStreams(new DescribeLogStreamsRequest(logGroup))
-                .getLogStreams().stream()
-                .map(LogStream::getLogStreamName)
-                .flatMap(logStream -> logs.getLogEvents(new GetLogEventsRequest(logGroup, logStream))
-                        .getEvents().stream())
-                .map(OutputLogEvent::getMessage)
+        return logs.describeLogStreams(DescribeLogStreamsRequest.builder()
+                        .logGroupName(logGroup)
+                        .build())
+                .logStreams().stream()
+                .map(LogStream::logStreamName)
+                .flatMap(logStream -> logs.getLogEvents(GetLogEventsRequest.builder()
+                                .logGroupName(logGroup)
+                                .logStreamName(logStream)
+                                .build())
+                        .events().stream())
+                .map(OutputLogEvent::message)
                 .filter(message -> message.contains("WeatherEvent"))
                 .map(String::trim)
                 .collect(Collectors.toSet());
