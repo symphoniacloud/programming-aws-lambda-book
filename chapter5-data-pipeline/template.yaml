@@ -4,7 +4,7 @@ Description: chapter5-data-pipeline
 
 Globals:
   Function:
-    Runtime: java8.al2
+    Runtime: java21
     MemorySize: 512
     Timeout: 10
 
