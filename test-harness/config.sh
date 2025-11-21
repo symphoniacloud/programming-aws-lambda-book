@@ -7,7 +7,8 @@ export AWS_DEFAULT_REGION="us-east-1"
 
 # Stack naming
 # Use GITHUB_RUN_ID if available (in CI), otherwise use "local"
-export STACK_PREFIX="lambda-book-test-${GITHUB_RUN_ID:-local}"
+# Keep prefix short for S3 bucket name limits (63 chars)
+export STACK_PREFIX="lb-test-${GITHUB_RUN_ID:-local}"
 
 # Project root (parent of test-harness)
 export PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
