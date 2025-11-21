@@ -26,23 +26,27 @@ export CHAPTERS=(
     "chapter8-s3-errors"
 )
 
-# Short names for stacks (S3 bucket names have 63 char limit)
-declare -A STACK_SUFFIXES=(
-    ["chapter2"]="ch2"
-    ["chapter3"]="ch3"
-    ["chapter4"]="ch4"
-    ["chapter5-api"]="ch5api"
-    ["chapter5-data-pipeline"]="ch5dp"
-    ["chapter5-event-sources"]="ch5es"
-    ["chapter6"]="ch6"
-    ["chapter7"]="ch7"
-    ["chapter8-s3-errors"]="ch8s3"
-)
+# Get short suffix for stack name (S3 bucket names have 63 char limit)
+get_stack_suffix() {
+    local chapter="$1"
+    case "$chapter" in
+        chapter2) echo "ch2" ;;
+        chapter3) echo "ch3" ;;
+        chapter4) echo "ch4" ;;
+        chapter5-api) echo "ch5api" ;;
+        chapter5-data-pipeline) echo "ch5dp" ;;
+        chapter5-event-sources) echo "ch5es" ;;
+        chapter6) echo "ch6" ;;
+        chapter7) echo "ch7" ;;
+        chapter8-s3-errors) echo "ch8s3" ;;
+        *) echo "$chapter" ;;
+    esac
+}
 
 # Get stack name for a chapter
 get_stack_name() {
     local chapter="$1"
-    local suffix="${STACK_SUFFIXES[$chapter]:-$chapter}"
+    local suffix=$(get_stack_suffix "$chapter")
     echo "${STACK_PREFIX}-${suffix}"
 }
 
