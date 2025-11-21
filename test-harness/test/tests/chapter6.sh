@@ -24,7 +24,8 @@ log_info "Running integration tests against stack: $STACK_NAME"
 
 # Install dependencies first (skip tests), then run only integration tests
 # Unit tests use system-rules which is incompatible with Java 9+
+# Skip exec plugin (it tries to run sam deploy, but we already deployed)
 mvn install -DskipTests -q
-mvn -pl integration-tests failsafe:integration-test failsafe:verify -DstackName="$STACK_NAME" -q
+mvn -pl integration-tests failsafe:integration-test failsafe:verify -DstackName="$STACK_NAME" -Dexec.skip=true -q
 
 log_info "Chapter 6 integration tests passed"
