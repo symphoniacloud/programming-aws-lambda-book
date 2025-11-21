@@ -22,8 +22,9 @@ cd "$CHAPTER_DIR"
 
 log_info "Running integration tests against stack: $STACK_NAME"
 
-# Run the integration tests
+# Run the integration tests from parent POM
 # The tests use the stackName system property
-mvn verify -pl integration-tests -DstackName="$STACK_NAME" -q
+# Note: Must build all modules since integration-tests depends on bulk-events-stage and single-event-stage
+mvn verify -DstackName="$STACK_NAME" -q
 
 log_info "Chapter 6 integration tests passed"
