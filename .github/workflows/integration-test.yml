@@ -5,6 +5,8 @@ on:
   push:
     branches:
       - main
+      # Temporary
+      - claude/*
 
 permissions:
   id-token: write   # Required for OIDC
