@@ -26,7 +26,7 @@ log_info "Invoking Lambda function: $FUNCTION_NAME"
 RESPONSE=$(aws lambda invoke \
     --function-name "$FUNCTION_NAME" \
     --region "$AWS_REGION" \
-    --payload '{}' \
+    --payload '"World"' \
     --cli-binary-format raw-in-base64-out \
     /tmp/chapter2-response.json \
     --output json)
