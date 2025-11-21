@@ -1,8 +1,7 @@
 package book.pipeline.bulk;
 
 import com.amazonaws.services.lambda.runtime.events.S3Event;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.amazonaws.services.lambda.runtime.events.models.s3.S3EventNotification;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,14 +19,12 @@ import uk.org.webcompere.systemstubs.jupiter.SystemStub;
 import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SystemStubsExtension.class)
 public class BulkEventsLambdaFunctionalTest {
-
-    private final ObjectMapper objectMapper = new ObjectMapper()
-            .enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES);
 
     @SystemStub
     private EnvironmentVariables environment;
@@ -40,9 +37,9 @@ public class BulkEventsLambdaFunctionalTest {
         S3Client mockS3 = Mockito.mock(S3Client.class);
 
         // Fixture S3 event
-        S3Event s3Event = objectMapper.readValue(getClass().getResourceAsStream("/s3_event.json"), S3Event.class);
-        String bucket = s3Event.getRecords().get(0).getS3().getBucket().getName();
-        String key = s3Event.getRecords().get(0).getS3().getObject().getKey();
+        String bucket = "example-bucket";
+        String key = "bulk_data.json";
+        S3Event s3Event = createS3Event(bucket, key);
 
         // Fixture S3 return value
         ResponseInputStream<GetObjectResponse> responseInputStream = new ResponseInputStream<>(
@@ -87,9 +84,9 @@ public class BulkEventsLambdaFunctionalTest {
         S3Client mockS3 = Mockito.mock(S3Client.class);
 
         // Fixture S3 event
-        S3Event s3Event = objectMapper.readValue(getClass().getResourceAsStream("/s3_event_bad_data.json"), S3Event.class);
-        String bucket = s3Event.getRecords().get(0).getS3().getBucket().getName();
-        String key = s3Event.getRecords().get(0).getS3().getObject().getKey();
+        String bucket = "example-bucket";
+        String key = "bad_data.json";
+        S3Event s3Event = createS3Event(bucket, key);
 
         // Fixture S3 return value
         ResponseInputStream<GetObjectResponse> responseInputStream = new ResponseInputStream<>(
@@ -109,6 +106,18 @@ public class BulkEventsLambdaFunctionalTest {
         RuntimeException exception = assertThrows(RuntimeException.class, () -> lambda.handler(s3Event));
         assertInstanceOf(InvalidFormatException.class, exception.getCause());
         assertTrue(exception.getMessage().contains("Cannot deserialize value of type `java.lang.Long` from String \"Wrong data type\""));
+    }
+
+    private S3Event createS3Event(String bucket, String key) {
+        S3EventNotification.S3BucketEntity bucketEntity = new S3EventNotification.S3BucketEntity(
+                bucket, null, null);
+        S3EventNotification.S3ObjectEntity objectEntity = new S3EventNotification.S3ObjectEntity(
+                key, null, null, null, null);
+        S3EventNotification.S3Entity s3Entity = new S3EventNotification.S3Entity(
+                null, bucketEntity, objectEntity, null);
+        S3EventNotification.S3EventNotificationRecord record = new S3EventNotification.S3EventNotificationRecord(
+                null, null, null, null, null, null, null, s3Entity, null);
+        return new S3Event(Collections.singletonList(record));
     }
 
     @Test
