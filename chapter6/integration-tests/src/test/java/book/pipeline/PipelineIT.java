@@ -35,9 +35,9 @@ public class PipelineIT {
 
     @Test
     public void endToEndTest() throws InterruptedException {
-        String bucketName = resolvePhysicalId("PipelineStartBucket");
-        String key = UUID.randomUUID().toString();
-        File file = new File(getClass().getResource("/bulk_data.json").getFile());
+        var bucketName = resolvePhysicalId("PipelineStartBucket");
+        var key = UUID.randomUUID().toString();
+        var file = new File(getClass().getResource("/bulk_data.json").getFile());
 
         // 1. Upload bulk_data file to S3
         s3.putObject(PutObjectRequest.builder()
@@ -47,8 +47,8 @@ public class PipelineIT {
 
         // 2. Check for executions of SingleEventLambda
         Thread.sleep(30000);
-        String singleEventLambda = resolvePhysicalId("SingleEventLambda");
-        Set<String> logMessages = getLogMessages(singleEventLambda);
+        var singleEventLambda = resolvePhysicalId("SingleEventLambda");
+        var logMessages = getLogMessages(singleEventLambda);
         assertThat(logMessages, hasItems(
                 "WeatherEvent{locationName='Brooklyn, NY', temperature=91.0, timestamp=1564428897, longitude=-73.99, latitude=40.7}",
                 "WeatherEvent{locationName='Oxford, UK', temperature=64.0, timestamp=1564428898, longitude=-1.25, latitude=51.75}",
@@ -65,23 +65,23 @@ public class PipelineIT {
         logs.deleteLogGroup(DeleteLogGroupRequest.builder()
                 .logGroupName(getLogGroup(singleEventLambda))
                 .build());
-        String bulkEventsLambda = resolvePhysicalId("BulkEventsLambda");
+        var bulkEventsLambda = resolvePhysicalId("BulkEventsLambda");
         logs.deleteLogGroup(DeleteLogGroupRequest.builder()
                 .logGroupName(getLogGroup(bulkEventsLambda))
                 .build());
     }
 
     private String resolvePhysicalId(String logicalId) {
-        DescribeStackResourceRequest request = DescribeStackResourceRequest.builder()
+        var request = DescribeStackResourceRequest.builder()
                 .stackName(stackName)
                 .logicalResourceId(logicalId)
                 .build();
-        DescribeStackResourceResponse response = cfn.describeStackResource(request);
+        var response = cfn.describeStackResource(request);
         return response.stackResourceDetail().physicalResourceId();
     }
 
     private Set<String> getLogMessages(String lambdaName) {
-        String logGroup = getLogGroup(lambdaName);
+        var logGroup = getLogGroup(lambdaName);
 
         return logs.describeLogStreams(DescribeLogStreamsRequest.builder()
                         .logGroupName(logGroup)

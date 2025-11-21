@@ -18,16 +18,16 @@ public class WeatherEventLambda {
     private final String tableName = System.getenv("LOCATIONS_TABLE");
 
     public ApiGatewayResponse handler(ApiGatewayRequest request) throws IOException {
-        final WeatherEvent weatherEvent = objectMapper.readValue(request.body, WeatherEvent.class);
+        var weatherEvent = objectMapper.readValue(request.body, WeatherEvent.class);
 
-        Map<String, AttributeValue> item = new HashMap<>();
+        var item = new HashMap<String, AttributeValue>();
         item.put("locationName", AttributeValue.builder().s(weatherEvent.locationName).build());
         item.put("temperature", AttributeValue.builder().n(String.valueOf(weatherEvent.temperature)).build());
         item.put("timestamp", AttributeValue.builder().n(String.valueOf(weatherEvent.timestamp)).build());
         item.put("longitude", AttributeValue.builder().n(String.valueOf(weatherEvent.longitude)).build());
         item.put("latitude", AttributeValue.builder().n(String.valueOf(weatherEvent.latitude)).build());
 
-        PutItemRequest putItemRequest = PutItemRequest.builder()
+        var putItemRequest = PutItemRequest.builder()
                 .tableName(tableName)
                 .item(item)
                 .build();

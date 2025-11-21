@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class ContextLambda {
     public Map<String, Object> handler(Object input, Context context) {
-        Map<String, Object> toReturn = new HashMap<>();
+        var toReturn = new HashMap<String, Object>();
         toReturn.put("getMemoryLimitInMB", context.getMemoryLimitInMB() + "");
         toReturn.put("getFunctionName", context.getFunctionName());
         toReturn.put("getFunctionVersion", context.getFunctionVersion());
