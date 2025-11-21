@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - 'feature/**'
+      - 'claude/update-lambda-examples-01PvMYTvCvRXWSY9GuijdZu2'
   pull_request:
     branches:
       - main
