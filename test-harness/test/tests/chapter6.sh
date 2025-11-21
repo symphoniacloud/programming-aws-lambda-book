@@ -22,11 +22,9 @@ cd "$CHAPTER_DIR"
 
 log_info "Running integration tests against stack: $STACK_NAME"
 
-# Run the integration tests from parent POM
-# The tests use the stackName system property
-# Note: Must build all modules since integration-tests depends on bulk-events-stage and single-event-stage
-# Skip unit tests (they use system-rules which is incompatible with Java 9+)
-# Only run integration tests via failsafe plugin
-mvn verify -DstackName="$STACK_NAME" -Dsurefire.skip=true -q
+# Install dependencies first (skip tests), then run only integration tests
+# Unit tests use system-rules which is incompatible with Java 9+
+mvn install -DskipTests -q
+mvn -pl integration-tests failsafe:integration-test failsafe:verify -DstackName="$STACK_NAME" -q
 
 log_info "Chapter 6 integration tests passed"
