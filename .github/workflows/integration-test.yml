@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - 2025-updates
 
 permissions:
   id-token: write   # Required for OIDC
