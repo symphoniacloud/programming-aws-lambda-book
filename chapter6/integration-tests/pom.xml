@@ -120,9 +120,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <systemPropertyVariables>
-                        <stackName>${integration.test.stack.name}</stackName>
-                    </systemPropertyVariables>
+                    <argLine>-DstackName=${stackName}</argLine>
                 </configuration>
             </plugin>
         </plugins>
