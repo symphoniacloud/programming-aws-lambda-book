@@ -121,7 +121,7 @@
                 </executions>
                 <configuration>
                     <systemPropertyVariables>
-                        <stackName>${stackName}</stackName>
+                        <stackName>${integration.test.stack.name}</stackName>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
