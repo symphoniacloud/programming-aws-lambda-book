@@ -26,6 +26,6 @@ mvn install -Dexec.skip=true -q
 
 log_info "Running integration tests against stack: $STACK_NAME"
 # Skip exec plugin (it tries to run sam deploy, but we already deployed)
-mvn -pl integration-tests verify -DstackName="$STACK_NAME" -DskipTests -Dexec.skip=true -q
+mvn -pl integration-tests verify -DstackName="$STACK_NAME" -Dexec.skip=true -q
 
 log_info "Chapter 6 tests passed"
