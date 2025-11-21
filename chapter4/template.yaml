@@ -7,6 +7,6 @@ Resources:
   HelloWorldLambda:
     Type: AWS::Serverless::Function
     Properties:
-      Runtime: java8
+      Runtime: java8.al2
       Handler: book.HelloWorld::handler
       CodeUri: target/lambda.zip
