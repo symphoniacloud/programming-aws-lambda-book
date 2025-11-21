@@ -12,10 +12,6 @@
 
     <artifactId>integration-tests</artifactId>
 
-    <properties>
-        <stackName/>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
@@ -124,9 +120,9 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <systemPropertyVariables>
-                        <stackName>${stackName}</stackName>
-                    </systemPropertyVariables>
+                    <environmentVariables>
+                        <STACK_NAME>${env.STACK_NAME}</STACK_NAME>
+                    </environmentVariables>
                 </configuration>
             </plugin>
         </plugins>

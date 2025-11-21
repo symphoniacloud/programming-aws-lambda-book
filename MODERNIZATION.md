@@ -28,12 +28,11 @@
 - **Mockito 5.12.0**: Updated for Java 21 compatibility
 - **S3Event tests**: Fixed to build events programmatically (no Jackson deserialization)
 
-### Known Issues (TODO)
-- **Chapter 6 integration tests**: `stackName` property not being passed correctly to Maven failsafe plugin
-  - The test harness passes `-DstackName=$STACK_NAME` but the forked JVM doesn't receive it
-  - The pom.xml has `<stackName/>` property and `systemPropertyVariables` configuration
-  - Need to debug why the property isn't being interpolated when running with `-pl integration-tests`
-  - Unit tests pass; only integration tests are affected
+### Known Issues (Resolved)
+- **Chapter 6 integration tests**: Fixed stack name passing to Maven failsafe plugin
+  - Root cause: Maven property `${integration.test.stack.name}` resolves at project load time, before `-D` override
+  - Solution: Use shell environment variable `${env.STACK_NAME}` instead of Maven property
+  - Test harness exports `STACK_NAME`, failsafe passes it via `environmentVariables`, test reads `System.getenv()`
 
 ---
 
