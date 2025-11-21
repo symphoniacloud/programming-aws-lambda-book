@@ -1,6 +1,7 @@
 package book.pipeline.bulk;
 
 import com.amazonaws.services.lambda.runtime.events.S3Event;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import org.junit.jupiter.api.Test;
@@ -25,7 +26,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(SystemStubsExtension.class)
 public class BulkEventsLambdaFunctionalTest {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper()
+            .enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES);
 
     @SystemStub
     private EnvironmentVariables environment;
