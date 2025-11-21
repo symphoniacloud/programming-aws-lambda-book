@@ -1,9 +1,6 @@
 package book.pipeline.bulk;
 
 import com.amazonaws.services.lambda.runtime.events.S3Event;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.sns.AmazonSNS;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import org.hamcrest.CoreMatchers;
@@ -14,6 +11,13 @@ import org.junit.contrib.java.lang.system.EnvironmentVariables;
 import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import software.amazon.awssdk.core.ResponseInputStream;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+import software.amazon.awssdk.services.sns.SnsClient;
+import software.amazon.awssdk.services.sns.model.PublishRequest;
+import software.amazon.awssdk.services.sns.model.PublishResponse;
 
 import java.io.IOException;
 
@@ -31,8 +35,8 @@ public class BulkEventsLambdaFunctionalTest {
     public void testHandler() throws IOException {
 
         // Set up mock AWS SDK clients
-        AmazonSNS mockSNS = Mockito.mock(AmazonSNS.class);
-        AmazonS3 mockS3 = Mockito.mock(AmazonS3.class);
+        SnsClient mockSNS = Mockito.mock(SnsClient.class);
+        S3Client mockS3 = Mockito.mock(S3Client.class);
 
         // Fixture S3 event
         S3Event s3Event = objectMapper.readValue(getClass().getResourceAsStream("/s3_event.json"), S3Event.class);
@@ -40,9 +44,19 @@ public class BulkEventsLambdaFunctionalTest {
         String key = s3Event.getRecords().get(0).getS3().getObject().getKey();
 
         // Fixture S3 return value
-        S3Object s3Object = new S3Object();
-        s3Object.setObjectContent(getClass().getResourceAsStream(String.format("/%s", key)));
-        Mockito.when(mockS3.getObject(bucket, key)).thenReturn(s3Object);
+        GetObjectRequest expectedRequest = GetObjectRequest.builder()
+                .bucket(bucket)
+                .key(key)
+                .build();
+        ResponseInputStream<GetObjectResponse> responseInputStream = new ResponseInputStream<>(
+                GetObjectResponse.builder().build(),
+                getClass().getResourceAsStream(String.format("/%s", key))
+        );
+        Mockito.when(mockS3.getObject(Mockito.any(GetObjectRequest.class))).thenReturn(responseInputStream);
+
+        // Mock SNS publish
+        Mockito.when(mockSNS.publish(Mockito.any(PublishRequest.class)))
+                .thenReturn(PublishResponse.builder().build());
 
         // Fixture environment
         String topic = "test-topic";
@@ -53,25 +67,27 @@ public class BulkEventsLambdaFunctionalTest {
         lambda.handler(s3Event);
 
         // Capture outbound SNS messages
-        ArgumentCaptor<String> topics = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<String> messages = ArgumentCaptor.forClass(String.class);
-        Mockito.verify(mockSNS, Mockito.times(3)).publish(topics.capture(), messages.capture());
+        ArgumentCaptor<PublishRequest> publishRequests = ArgumentCaptor.forClass(PublishRequest.class);
+        Mockito.verify(mockSNS, Mockito.times(3)).publish(publishRequests.capture());
 
         // Assert
-        Assert.assertArrayEquals(new String[]{topic, topic, topic}, topics.getAllValues().toArray());
+        Assert.assertEquals(3, publishRequests.getAllValues().size());
+        Assert.assertEquals(topic, publishRequests.getAllValues().get(0).topicArn());
+        Assert.assertEquals(topic, publishRequests.getAllValues().get(1).topicArn());
+        Assert.assertEquals(topic, publishRequests.getAllValues().get(2).topicArn());
         Assert.assertArrayEquals(new String[]{
                 "{\"locationName\":\"Brooklyn, NY\",\"temperature\":91.0,\"timestamp\":1564428897,\"longitude\":-73.99,\"latitude\":40.7}",
                 "{\"locationName\":\"Oxford, UK\",\"temperature\":64.0,\"timestamp\":1564428898,\"longitude\":-1.25,\"latitude\":51.75}",
                 "{\"locationName\":\"Charlottesville, VA\",\"temperature\":87.0,\"timestamp\":1564428899,\"longitude\":-78.47,\"latitude\":38.02}"
-        }, messages.getAllValues().toArray());
+        }, publishRequests.getAllValues().stream().map(PublishRequest::message).toArray());
     }
 
     @Test
     public void testBadData() throws IOException {
 
         // Set up mock AWS SDK clients
-        AmazonSNS mockSNS = Mockito.mock(AmazonSNS.class);
-        AmazonS3 mockS3 = Mockito.mock(AmazonS3.class);
+        SnsClient mockSNS = Mockito.mock(SnsClient.class);
+        S3Client mockS3 = Mockito.mock(S3Client.class);
 
         // Fixture S3 event
         S3Event s3Event = objectMapper.readValue(getClass().getResourceAsStream("/s3_event_bad_data.json"), S3Event.class);
@@ -79,9 +95,11 @@ public class BulkEventsLambdaFunctionalTest {
         String key = s3Event.getRecords().get(0).getS3().getObject().getKey();
 
         // Fixture S3 return value
-        S3Object s3Object = new S3Object();
-        s3Object.setObjectContent(getClass().getResourceAsStream(String.format("/%s", key)));
-        Mockito.when(mockS3.getObject(bucket, key)).thenReturn(s3Object);
+        ResponseInputStream<GetObjectResponse> responseInputStream = new ResponseInputStream<>(
+                GetObjectResponse.builder().build(),
+                getClass().getResourceAsStream(String.format("/%s", key))
+        );
+        Mockito.when(mockS3.getObject(Mockito.any(GetObjectRequest.class))).thenReturn(responseInputStream);
 
         // Fixture environment
         String topic = "test-topic";
@@ -101,8 +119,8 @@ public class BulkEventsLambdaFunctionalTest {
     public void testBadEnvironment() throws IOException {
 
         // Set up mock AWS SDK clients
-        AmazonSNS mockSNS = Mockito.mock(AmazonSNS.class);
-        AmazonS3 mockS3 = Mockito.mock(AmazonS3.class);
+        SnsClient mockSNS = Mockito.mock(SnsClient.class);
+        S3Client mockS3 = Mockito.mock(S3Client.class);
 
         // Fixture S3 event
         S3Event s3Event = objectMapper.readValue(getClass().getResourceAsStream("/s3_event.json"), S3Event.class);
