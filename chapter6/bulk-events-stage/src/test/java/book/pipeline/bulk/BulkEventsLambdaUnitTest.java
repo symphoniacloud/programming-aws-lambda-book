@@ -2,27 +2,25 @@ package book.pipeline.bulk;
 
 import book.pipeline.common.WeatherEvent;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import org.hamcrest.CoreMatchers;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.contrib.java.lang.system.EnvironmentVariables;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
+import uk.org.webcompere.systemstubs.jupiter.SystemStub;
+import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+@ExtendWith(SystemStubsExtension.class)
 public class BulkEventsLambdaUnitTest {
 
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
+    @SystemStub
+    private EnvironmentVariables environment;
 
-    @Rule
-    public EnvironmentVariables environment = new EnvironmentVariables();
-
-    @Before
+    @BeforeEach
     public void before() {
         environment.set(BulkEventsLambda.FAN_OUT_TOPIC_ENV, "test-topic");
     }
@@ -38,25 +36,25 @@ public class BulkEventsLambdaUnitTest {
         List<WeatherEvent> weatherEvents = lambda.readWeatherEvents(inputStream);
 
         // Assert
-        Assert.assertEquals(3, weatherEvents.size());
+        assertEquals(3, weatherEvents.size());
 
-        Assert.assertEquals("Brooklyn, NY", weatherEvents.get(0).locationName);
-        Assert.assertEquals(91.0, weatherEvents.get(0).temperature, 0.0);
-        Assert.assertEquals(1564428897L, weatherEvents.get(0).timestamp, 0);
-        Assert.assertEquals(40.7, weatherEvents.get(0).latitude, 0.0);
-        Assert.assertEquals(-73.99, weatherEvents.get(0).longitude, 0.0);
+        assertEquals("Brooklyn, NY", weatherEvents.get(0).locationName);
+        assertEquals(91.0, weatherEvents.get(0).temperature, 0.0);
+        assertEquals(1564428897L, weatherEvents.get(0).timestamp, 0);
+        assertEquals(40.7, weatherEvents.get(0).latitude, 0.0);
+        assertEquals(-73.99, weatherEvents.get(0).longitude, 0.0);
 
-        Assert.assertEquals("Oxford, UK", weatherEvents.get(1).locationName);
-        Assert.assertEquals(64.0, weatherEvents.get(1).temperature, 0.0);
-        Assert.assertEquals(1564428897L, weatherEvents.get(1).timestamp, 0);
-        Assert.assertEquals(51.75, weatherEvents.get(1).latitude, 0.0);
-        Assert.assertEquals(-1.25, weatherEvents.get(1).longitude, 0.0);
+        assertEquals("Oxford, UK", weatherEvents.get(1).locationName);
+        assertEquals(64.0, weatherEvents.get(1).temperature, 0.0);
+        assertEquals(1564428897L, weatherEvents.get(1).timestamp, 0);
+        assertEquals(51.75, weatherEvents.get(1).latitude, 0.0);
+        assertEquals(-1.25, weatherEvents.get(1).longitude, 0.0);
 
-        Assert.assertEquals("Charlottesville, VA", weatherEvents.get(2).locationName);
-        Assert.assertEquals(87.0, weatherEvents.get(2).temperature, 0.0);
-        Assert.assertEquals(1564428897L, weatherEvents.get(2).timestamp, 0);
-        Assert.assertEquals(38.02, weatherEvents.get(2).latitude, 0.0);
-        Assert.assertEquals(-78.47, weatherEvents.get(2).longitude, 0.0);
+        assertEquals("Charlottesville, VA", weatherEvents.get(2).locationName);
+        assertEquals(87.0, weatherEvents.get(2).temperature, 0.0);
+        assertEquals(1564428897L, weatherEvents.get(2).timestamp, 0);
+        assertEquals(38.02, weatherEvents.get(2).latitude, 0.0);
+        assertEquals(-78.47, weatherEvents.get(2).longitude, 0.0);
     }
 
     @Test
@@ -65,14 +63,13 @@ public class BulkEventsLambdaUnitTest {
         // Fixture data
         InputStream inputStream = getClass().getResourceAsStream("/bad_data.json");
 
-        // Expect exception
-        thrown.expect(RuntimeException.class);
-        thrown.expectCause(CoreMatchers.instanceOf(InvalidFormatException.class));
-        thrown.expectMessage("Cannot deserialize value of type `java.lang.Long` from String \"Wrong data type\": not a valid Long value");
-
-        // Invoke
+        // Construct Lambda function class
         BulkEventsLambda lambda = new BulkEventsLambda(null, null);
-        lambda.readWeatherEvents(inputStream);
+
+        // Assert exception
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> lambda.readWeatherEvents(inputStream));
+        assertInstanceOf(InvalidFormatException.class, exception.getCause());
+        assertTrue(exception.getMessage().contains("Cannot deserialize value of type `java.lang.Long` from String \"Wrong data type\""));
     }
 
     @Test
@@ -87,7 +84,7 @@ public class BulkEventsLambdaUnitTest {
         BulkEventsLambda lambda = new BulkEventsLambda(null, null);
         String message = lambda.weatherEventToSnsMessage(weatherEvent);
 
-        Assert.assertEquals(
+        assertEquals(
                 "{\"locationName\":\"Foo, Bar\",\"temperature\":32.0,\"timestamp\":0,\"longitude\":-100.0,\"latitude\":100.0}"
                 , message);
     }
