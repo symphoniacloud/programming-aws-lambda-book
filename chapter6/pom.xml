@@ -77,7 +77,7 @@
             <dependency>
                 <groupId>uk.org.webcompere</groupId>
                 <artifactId>system-stubs-jupiter</artifactId>
-                <version>2.1.6</version>
+                <version>2.1.8</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -88,7 +88,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>exec-maven-plugin</artifactId>
-                    <version>1.6.0</version>
+                    <version>3.5.0</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-surefire-plugin</artifactId>
@@ -100,7 +100,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-assembly-plugin</artifactId>
-                    <version>3.1.1</version>
+                    <version>3.7.1</version>
                     <executions>
                         <execution>
                             <id>001-make-assembly</id>
@@ -115,7 +115,6 @@
                         <descriptors>
                             <descriptor>src/assembly/lambda-zip.xml</descriptor>
                         </descriptors>
-                        <finalName>lambda</finalName>
                     </configuration>
                 </plugin>
                 <plugin>

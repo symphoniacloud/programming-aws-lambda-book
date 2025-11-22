@@ -34,10 +34,11 @@
     </dependencies>
 
     <build>
+        <finalName>lambda</finalName>
         <plugins>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>3.7.1</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -51,13 +52,12 @@
                     <descriptors>
                         <descriptor>src/assembly/lambda-zip.xml</descriptor>
                     </descriptors>
-                    <finalName>lambda</finalName>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>io.github.zlika</groupId>
                 <artifactId>reproducible-build-maven-plugin</artifactId>
-                <version>0.5.2</version>
+                <version>0.10</version>
                 <executions>
                     <execution>
                         <phase>package</phase>

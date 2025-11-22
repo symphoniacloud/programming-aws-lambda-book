@@ -48,7 +48,7 @@
       <plugins>
         <plugin>
           <artifactId>maven-assembly-plugin</artifactId>
-          <version>3.1.1</version>
+          <version>3.7.1</version>
           <executions>
             <execution>
               <id>001-make-assembly</id>
@@ -63,7 +63,6 @@
             <descriptors>
               <descriptor>src/assembly/lambda-zip.xml</descriptor>
             </descriptors>
-            <finalName>lambda</finalName>
           </configuration>
         </plugin>
         <plugin>

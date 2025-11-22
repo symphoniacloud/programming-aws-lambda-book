@@ -45,10 +45,11 @@
   </dependencies>
 
   <build>
+    <finalName>lambda</finalName>
     <plugins>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>3.1.1</version>
+        <version>3.7.1</version>
         <executions>
           <execution>
             <phase>package</phase>
@@ -62,7 +63,6 @@
           <descriptors>
             <descriptor>src/assembly/lambda-zip.xml</descriptor>
           </descriptors>
-          <finalName>lambda</finalName>
         </configuration>
       </plugin>
       <plugin>

@@ -98,6 +98,9 @@ Replace manual logging/metrics/tracing (chapter 7):
 - Use `Globals` section for DRY configuration
 - Add structured logging: `LoggingConfig: { LogFormat: JSON }`
 
+### Dependency Cleanup
+- Replace `jackson-datatype-joda` with `jackson-datatype-jsr310` in chapter6/single-event-stage (Joda-Time is deprecated; use java.time)
+
 ---
 
 ## Test Harness Usage
