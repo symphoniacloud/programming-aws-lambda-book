@@ -44,7 +44,7 @@ All chapters migrated from AWS SDK v1 to v2:
     <aws.sdk.version>2.29.6</aws.sdk.version>
 
     <!-- Lambda Libraries -->
-    <aws.lambda.java.core.version>1.2.3</aws.lambda.java.core.version>
+    <aws.lambda.java.core.version>1.4.0</aws.lambda.java.core.version>
     <aws.lambda.java.events.version>3.14.0</aws.lambda.java.events.version>
 
     <!-- Logging -->
