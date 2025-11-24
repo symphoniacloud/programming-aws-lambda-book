@@ -1,11 +1,10 @@
 name: Integration Tests
 
 on:
-  workflow_dispatch:  # Manual trigger
+  workflow_dispatch:
   push:
     branches:
       - main
-      - 2025-updates
 
 permissions:
   id-token: write   # Required for OIDC
@@ -40,7 +39,6 @@ jobs:
       - run: ./test-all.sh
         working-directory: ./test-harness
 
-# Add back when ready
-#      - if: always()
-#        run: ./teardown-all.sh
-#        working-directory: ./test-harness
+      - if: always()
+        run: ./teardown-all.sh
+        working-directory: ./test-harness
