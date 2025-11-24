@@ -34,9 +34,12 @@ jobs:
           role-to-assume: arn:aws:iam::397589511426:role/account-wide-resources-GithubActionsRole-1CAIKQPYM5WD3
           aws-region: us-east-1
 
-      - run: ./test-harness/deploy-all.sh
+      - run: ./deploy-all.sh
+        working-directory: ./test-harness
 
-      - run: ./test-harness/test-all.sh
+      - run: ./test-all.sh
+        working-directory: ./test-harness
 
       - if: always()
-        run: ./test-harness/teardown-all.sh
+        run: ./teardown-all.sh
+        working-directory: ./test-harness
