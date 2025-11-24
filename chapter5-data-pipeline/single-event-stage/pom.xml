@@ -29,6 +29,7 @@
     </dependencies>
 
     <build>
+        <finalName>lambda</finalName>
         <plugins>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>

@@ -11,8 +11,7 @@
   <packaging>pom</packaging>
 
   <properties>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
+    <maven.compiler.release>21</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
@@ -25,21 +24,21 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>com.amazonaws</groupId>
-        <artifactId>aws-java-sdk-bom</artifactId>
-        <version>1.11.600</version>
+        <groupId>software.amazon.awssdk</groupId>
+        <artifactId>bom</artifactId>
+        <version>2.39.0</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>com.amazonaws</groupId>
         <artifactId>aws-lambda-java-events</artifactId>
-        <version>2.2.6</version>
+        <version>3.16.1</version>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
-        <version>2.10.1</version>
+        <version>2.18.5</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -49,7 +48,7 @@
       <plugins>
         <plugin>
           <artifactId>maven-assembly-plugin</artifactId>
-          <version>3.1.1</version>
+          <version>3.7.1</version>
           <executions>
             <execution>
               <id>001-make-assembly</id>
@@ -64,13 +63,12 @@
             <descriptors>
               <descriptor>src/assembly/lambda-zip.xml</descriptor>
             </descriptors>
-            <finalName>lambda</finalName>
           </configuration>
         </plugin>
         <plugin>
           <groupId>io.github.zlika</groupId>
           <artifactId>reproducible-build-maven-plugin</artifactId>
-          <version>0.10</version>
+          <version>0.17</version>
           <executions>
             <execution>
               <id>002-strip-jar</id>
