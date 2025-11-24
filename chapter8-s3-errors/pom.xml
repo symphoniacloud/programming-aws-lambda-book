@@ -36,7 +36,7 @@
     <dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-lambda-java-events</artifactId>
-      <version>3.14.0</version>
+      <version>3.16.1</version>
     </dependency>
     <dependency>
       <groupId>software.amazon.awssdk</groupId>
@@ -72,7 +72,7 @@
       <plugin>
         <groupId>io.github.zlika</groupId>
         <artifactId>reproducible-build-maven-plugin</artifactId>
-        <version>0.10</version>
+        <version>0.17</version>
         <executions>
           <execution>
             <phase>package</phase>

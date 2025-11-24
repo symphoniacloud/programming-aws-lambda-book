@@ -1,8 +1,9 @@
 #!/bin/bash
+# Teardown all chapter stacks
 
 set -euo pipefail
 source harnessShared.sh
 
 for CHAPTER in "${CHAPTERS[@]}"; do
-  ./build-stack.sh "$CHAPTER"
+  ./teardown-stack.sh "$CHAPTER"
 done

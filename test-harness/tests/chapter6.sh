@@ -6,8 +6,7 @@
 
 set -e
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-source "$SCRIPT_DIR/config.sh"
+source harnessShared.sh
 
 log_info "Testing Chapter 6 - Running Maven Integration Tests"
 

@@ -1,10 +1,6 @@
 #!/bin/bash
 # Shared configuration for test harness
 
-# AWS Configuration
-export AWS_REGION="us-east-1"
-export AWS_DEFAULT_REGION="us-east-1"
-
 # Stack naming
 # Use GITHUB_RUN_ID if available (in CI), otherwise use "local"
 # Keep prefix short for S3 bucket name limits (63 chars)
@@ -76,11 +72,9 @@ wait_for_stack() {
     log_info "Waiting for stack $stack_name to stabilize..."
 
     aws cloudformation wait stack-create-complete \
-        --stack-name "$stack_name" \
-        --region "$AWS_REGION" 2>/dev/null || \
+        --stack-name "$stack_name" 2>/dev/null || \
     aws cloudformation wait stack-update-complete \
-        --stack-name "$stack_name" \
-        --region "$AWS_REGION" 2>/dev/null
+        --stack-name "$stack_name" 2>/dev/null
 
     return $?
 }
@@ -92,7 +86,6 @@ get_stack_output() {
 
     aws cloudformation describe-stacks \
         --stack-name "$stack_name" \
-        --region "$AWS_REGION" \
         --query "Stacks[0].Outputs[?OutputKey=='${output_key}'].OutputValue" \
         --output text
 }
@@ -101,7 +94,6 @@ get_stack_output() {
 stack_exists() {
     local stack_name="$1"
     aws cloudformation describe-stacks \
-        --stack-name "$stack_name" \
-        --region "$AWS_REGION" &>/dev/null
+        --stack-name "$stack_name" &>/dev/null
     return $?
 }

@@ -14,8 +14,8 @@
 - Applied `var` keyword for cleaner code in chapters 3, 5-api, 6, 7
 
 ### Security Updates
-- Jackson 2.17.2 (fixed CVEs from 2.10.1)
-- Log4j 2.23.1
+- Jackson 2.20.1 (fixed CVEs from 2.10.1)
+- Log4j 2.25.2
 
 ### AWS SDK v2 Migration
 All chapters migrated from AWS SDK v1 to v2:
@@ -25,8 +25,8 @@ All chapters migrated from AWS SDK v1 to v2:
 - X-Ray SDK v2 instrumentor (chapter 7)
 
 ### Testing Modernization
-- JUnit 5 (Jupiter 5.10.3)
-- Mockito 5.12.0
+- JUnit 5 (Jupiter 5.14.1)
+- Mockito 5.20.0
 - system-stubs-jupiter 2.1.6 (replaced system-rules for Java 9+ compatibility)
 - S3Event tests build events programmatically
 
@@ -48,14 +48,14 @@ All chapters migrated from AWS SDK v1 to v2:
     <aws.lambda.java.events.version>3.14.0</aws.lambda.java.events.version>
 
     <!-- Logging -->
-    <log4j.version>2.23.1</log4j.version>
+    <log4j.version>2.25.2</log4j.version>
 
     <!-- JSON -->
-    <jackson.version>2.17.2</jackson.version>
+    <jackson.version>2.20.1</jackson.version>
 
     <!-- Testing -->
-    <junit.version>5.10.3</junit.version>
-    <mockito.version>5.12.0</mockito.version>
+    <junit.version>5.14.1</junit.version>
+    <mockito.version>5.20.0</mockito.version>
     <system-stubs.version>2.1.6</system-stubs.version>
 
     <!-- X-Ray SDK v2 -->

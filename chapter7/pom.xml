@@ -26,7 +26,7 @@
       <dependency>
         <groupId>com.amazonaws</groupId>
         <artifactId>aws-xray-recorder-sdk-bom</artifactId>
-        <version>2.18.1</version>
+        <version>2.20.0</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -43,7 +43,7 @@
     <dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-lambda-java-events</artifactId>
-      <version>3.14.0</version>
+      <version>3.16.1</version>
     </dependency>
     <dependency>
       <groupId>software.amazon.awssdk</groupId>
@@ -57,17 +57,17 @@
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-core</artifactId>
-      <version>2.23.1</version>
+      <version>2.24.3</version>
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-api</artifactId>
-      <version>2.23.1</version>
+      <version>2.24.3</version>
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-jcl</artifactId>
-      <version>2.23.1</version>
+      <version>2.24.3</version>
     </dependency>
     <dependency>
       <groupId>com.amazonaws</groupId>
@@ -84,7 +84,8 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.17.2</version>
+        <!-- Having problems with versions later than this as of Nov 2025 -->
+      <version>2.18.5</version>
     </dependency>
   </dependencies>
 
@@ -112,7 +113,7 @@
       <plugin>
         <groupId>io.github.zlika</groupId>
         <artifactId>reproducible-build-maven-plugin</artifactId>
-        <version>0.10</version>
+        <version>0.17</version>
         <executions>
           <execution>
             <phase>package</phase>

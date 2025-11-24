@@ -3,8 +3,7 @@
 
 set -e
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-source "$SCRIPT_DIR/config.sh"
+source harnessShared.sh
 
 log_info "Testing Chapter 5 API - Weather Events"
 
@@ -12,7 +11,6 @@ log_info "Testing Chapter 5 API - Weather Events"
 # First, let's find the API Gateway RestApi
 API_ID=$(aws cloudformation list-stack-resources \
     --stack-name "$STACK_NAME" \
-    --region "$AWS_REGION" \
     --query "StackResourceSummaries[?ResourceType=='AWS::ApiGateway::RestApi'].PhysicalResourceId" \
     --output text)
 
@@ -22,7 +20,7 @@ if [ -z "$API_ID" ]; then
 fi
 
 # Construct the API URL
-API_URL="https://${API_ID}.execute-api.${AWS_REGION}.amazonaws.com/Prod"
+API_URL="https://${API_ID}.execute-api.us-east-1.amazonaws.com/Prod"
 log_info "API URL: $API_URL"
 
 # Test 1: POST a weather event
