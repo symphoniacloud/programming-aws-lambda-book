@@ -18,7 +18,7 @@ public class SingleEventLambda {
 
     private void processSNSRecord(SNSEvent.SNSRecord snsRecord) {
         try {
-            final WeatherEvent weatherEvent = objectMapper.readValue(
+            final var weatherEvent = objectMapper.readValue(
                     snsRecord.getSNS().getMessage(),
                     WeatherEvent.class);
             System.out.println("Received weather event:");

@@ -30,7 +30,7 @@ public class BulkEventsLambda {
     }
 
     private void processS3EventRecord(S3EventNotification.S3EventNotificationRecord record) {
-        final List<WeatherEvent> weatherEvents = readWeatherEventsFromS3(
+        final var weatherEvents = readWeatherEventsFromS3(
                 record.getS3().getBucket().getName(),
                 record.getS3().getObject().getKey());
 
@@ -46,12 +46,12 @@ public class BulkEventsLambda {
 
     private List<WeatherEvent> readWeatherEventsFromS3(String bucket, String key) {
         try {
-            GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+            final var getObjectRequest = GetObjectRequest.builder()
                     .bucket(bucket)
                     .key(key)
                     .build();
-            final InputStream s3is = s3.getObject(getObjectRequest);
-            final WeatherEvent[] weatherEvents =
+            final var s3is = s3.getObject(getObjectRequest);
+            final var weatherEvents =
                     objectMapper.readValue(s3is, WeatherEvent[].class);
             s3is.close();
             return Arrays.asList(weatherEvents);

@@ -19,18 +19,18 @@ public class WeatherQueryLambda {
     private static final String DEFAULT_LIMIT = "50";
 
     public ApiGatewayResponse handler(ApiGatewayRequest request) throws IOException {
-        final String limitParam = request.queryStringParameters == null
+        final var limitParam = request.queryStringParameters == null
                 ? DEFAULT_LIMIT
                 : request.queryStringParameters.getOrDefault("limit", DEFAULT_LIMIT);
-        final int limit = Integer.parseInt(limitParam);
+        final var limit = Integer.parseInt(limitParam);
 
-        final ScanRequest scanRequest = ScanRequest.builder()
+        final var scanRequest = ScanRequest.builder()
                 .tableName(tableName)
                 .limit(limit)
                 .build();
-        final ScanResponse scanResponse = dynamoDB.scan(scanRequest);
+        final var scanResponse = dynamoDB.scan(scanRequest);
 
-        final List<WeatherEvent> events = scanResponse.items().stream()
+        final var events = scanResponse.items().stream()
                 .map(item -> new WeatherEvent(
                         item.get("locationName").s(),
                         Double.parseDouble(item.get("temperature").n()),
@@ -40,7 +40,7 @@ public class WeatherQueryLambda {
                 ))
                 .collect(Collectors.toList());
 
-        final String json = objectMapper.writeValueAsString(events);
+        final var json = objectMapper.writeValueAsString(events);
 
         return new ApiGatewayResponse(200, json);
     }

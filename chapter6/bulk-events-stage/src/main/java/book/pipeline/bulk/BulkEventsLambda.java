@@ -42,7 +42,7 @@ public class BulkEventsLambda {
     public void handler(S3Event event) {
 
         // Read and deserialize WeatherEvent objects from S3
-        List<WeatherEvent> events = event.getRecords().stream()
+        final var events = event.getRecords().stream()
                 .map(this::getObjectFromS3)
                 .map(this::readWeatherEvents)
                 .flatMap(List::stream)
@@ -64,8 +64,8 @@ public class BulkEventsLambda {
     }
 
     private InputStream getObjectFromS3(S3EventNotification.S3EventNotificationRecord record) {
-        String bucket = record.getS3().getBucket().getName();
-        String key = record.getS3().getObject().getKey();
+        final var bucket = record.getS3().getBucket().getName();
+        final var key = record.getS3().getObject().getKey();
         GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                 .bucket(bucket)
                 .key(key)

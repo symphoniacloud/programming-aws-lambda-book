@@ -33,16 +33,16 @@ public class BulkEventsLambdaFunctionalTest {
     public void testHandler() throws IOException {
 
         // Set up mock AWS SDK clients
-        SnsClient mockSNS = Mockito.mock(SnsClient.class);
-        S3Client mockS3 = Mockito.mock(S3Client.class);
+        var mockSNS = Mockito.mock(SnsClient.class);
+        var mockS3 = Mockito.mock(S3Client.class);
 
         // Fixture S3 event
-        String bucket = "example-bucket";
-        String key = "bulk_data.json";
-        S3Event s3Event = createS3Event(bucket, key);
+        var bucket = "example-bucket";
+        var key = "bulk_data.json";
+        var s3Event = createS3Event(bucket, key);
 
         // Fixture S3 return value
-        ResponseInputStream<GetObjectResponse> responseInputStream = new ResponseInputStream<>(
+        var responseInputStream = new ResponseInputStream<>(
                 GetObjectResponse.builder().build(),
                 getClass().getResourceAsStream(String.format("/%s", key))
         );
@@ -53,15 +53,15 @@ public class BulkEventsLambdaFunctionalTest {
                 .thenReturn(PublishResponse.builder().build());
 
         // Fixture environment
-        String topic = "test-topic";
+        var topic = "test-topic";
         environment.set(BulkEventsLambda.FAN_OUT_TOPIC_ENV, topic);
 
         // Construct Lambda function class, and invoke handler
-        BulkEventsLambda lambda = new BulkEventsLambda(mockSNS, mockS3);
+        var lambda = new BulkEventsLambda(mockSNS, mockS3);
         lambda.handler(s3Event);
 
         // Capture outbound SNS messages
-        ArgumentCaptor<PublishRequest> publishRequests = ArgumentCaptor.forClass(PublishRequest.class);
+        var publishRequests = ArgumentCaptor.forClass(PublishRequest.class);
         Mockito.verify(mockSNS, Mockito.times(3)).publish(publishRequests.capture());
 
         // Assert
@@ -80,42 +80,42 @@ public class BulkEventsLambdaFunctionalTest {
     public void testBadData() throws IOException {
 
         // Set up mock AWS SDK clients
-        SnsClient mockSNS = Mockito.mock(SnsClient.class);
-        S3Client mockS3 = Mockito.mock(S3Client.class);
+        var mockSNS = Mockito.mock(SnsClient.class);
+        var mockS3 = Mockito.mock(S3Client.class);
 
         // Fixture S3 event
-        String bucket = "example-bucket";
-        String key = "bad_data.json";
-        S3Event s3Event = createS3Event(bucket, key);
+        var bucket = "example-bucket";
+        var key = "bad_data.json";
+        var s3Event = createS3Event(bucket, key);
 
         // Fixture S3 return value
-        ResponseInputStream<GetObjectResponse> responseInputStream = new ResponseInputStream<>(
+        var responseInputStream = new ResponseInputStream<>(
                 GetObjectResponse.builder().build(),
                 getClass().getResourceAsStream(String.format("/%s", key))
         );
         Mockito.when(mockS3.getObject(Mockito.any(GetObjectRequest.class))).thenReturn(responseInputStream);
 
         // Fixture environment
-        String topic = "test-topic";
+        var topic = "test-topic";
         environment.set(BulkEventsLambda.FAN_OUT_TOPIC_ENV, topic);
 
         // Construct Lambda function class, and invoke handler
-        BulkEventsLambda lambda = new BulkEventsLambda(mockSNS, mockS3);
+        var lambda = new BulkEventsLambda(mockSNS, mockS3);
 
         // Assert exception
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> lambda.handler(s3Event));
+        var exception = assertThrows(RuntimeException.class, () -> lambda.handler(s3Event));
         assertInstanceOf(InvalidFormatException.class, exception.getCause());
         assertTrue(exception.getMessage().contains("Cannot deserialize value of type `java.lang.Long` from String \"Wrong data type\""));
     }
 
     private S3Event createS3Event(String bucket, String key) {
-        S3EventNotification.S3BucketEntity bucketEntity = new S3EventNotification.S3BucketEntity(
+        var bucketEntity = new S3EventNotification.S3BucketEntity(
                 bucket, null, null);
-        S3EventNotification.S3ObjectEntity objectEntity = new S3EventNotification.S3ObjectEntity(
+        var objectEntity = new S3EventNotification.S3ObjectEntity(
                 key, null, null, null, null);
-        S3EventNotification.S3Entity s3Entity = new S3EventNotification.S3Entity(
+        var s3Entity = new S3EventNotification.S3Entity(
                 null, bucketEntity, objectEntity, null);
-        S3EventNotification.S3EventNotificationRecord record = new S3EventNotification.S3EventNotificationRecord(
+        var record = new S3EventNotification.S3EventNotificationRecord(
                 null, null, null, null, null, null, null, s3Entity, null);
         return new S3Event(Collections.singletonList(record));
     }
@@ -124,8 +124,8 @@ public class BulkEventsLambdaFunctionalTest {
     public void testBadEnvironment() throws IOException {
 
         // Set up mock AWS SDK clients
-        SnsClient mockSNS = Mockito.mock(SnsClient.class);
-        S3Client mockS3 = Mockito.mock(S3Client.class);
+        var mockSNS = Mockito.mock(SnsClient.class);
+        var mockS3 = Mockito.mock(S3Client.class);
 
         // Do *not* fixture environment
 

@@ -14,6 +14,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <!-- The book uses V1 of the AWS Java SDK, but that's now very out of date
+            V2, as used here now, uses a very different library structure -->
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -57,7 +59,7 @@
             <plugin>
                 <groupId>io.github.zlika</groupId>
                 <artifactId>reproducible-build-maven-plugin</artifactId>
-                <version>0.10</version>
+                <version>0.17</version>
                 <executions>
                     <execution>
                         <phase>package</phase>

@@ -29,11 +29,11 @@ public class BulkEventsLambdaUnitTest {
     public void testReadWeatherEvents() {
 
         // Fixture data
-        InputStream inputStream = getClass().getResourceAsStream("/bulk_data.json");
+        var inputStream = getClass().getResourceAsStream("/bulk_data.json");
 
         // Construct Lambda function class, and invoke
-        BulkEventsLambda lambda = new BulkEventsLambda(null, null);
-        List<WeatherEvent> weatherEvents = lambda.readWeatherEvents(inputStream);
+        var lambda = new BulkEventsLambda(null, null);
+        var weatherEvents = lambda.readWeatherEvents(inputStream);
 
         // Assert
         assertEquals(3, weatherEvents.size());
@@ -61,28 +61,28 @@ public class BulkEventsLambdaUnitTest {
     public void testReadWeatherEventsBadData() {
 
         // Fixture data
-        InputStream inputStream = getClass().getResourceAsStream("/bad_data.json");
+        var inputStream = getClass().getResourceAsStream("/bad_data.json");
 
         // Construct Lambda function class
-        BulkEventsLambda lambda = new BulkEventsLambda(null, null);
+        var lambda = new BulkEventsLambda(null, null);
 
         // Assert exception
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> lambda.readWeatherEvents(inputStream));
+        var exception = assertThrows(RuntimeException.class, () -> lambda.readWeatherEvents(inputStream));
         assertInstanceOf(InvalidFormatException.class, exception.getCause());
         assertTrue(exception.getMessage().contains("Cannot deserialize value of type `java.lang.Long` from String \"Wrong data type\""));
     }
 
     @Test
     public void testWeatherEventToSnsMessage() {
-        WeatherEvent weatherEvent = new WeatherEvent();
+        var weatherEvent = new WeatherEvent();
         weatherEvent.locationName = "Foo, Bar";
         weatherEvent.latitude = 100.0;
         weatherEvent.longitude = -100.0;
         weatherEvent.temperature = 32.0;
         weatherEvent.timestamp = 0L;
 
-        BulkEventsLambda lambda = new BulkEventsLambda(null, null);
-        String message = lambda.weatherEventToSnsMessage(weatherEvent);
+        var lambda = new BulkEventsLambda(null, null);
+        var message = lambda.weatherEventToSnsMessage(weatherEvent);
 
         assertEquals(
                 "{\"locationName\":\"Foo, Bar\",\"temperature\":32.0,\"timestamp\":0,\"longitude\":-100.0,\"latitude\":100.0}"
