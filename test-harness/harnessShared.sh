@@ -10,11 +10,11 @@ export CHAPTERS=(
     "chapter3"
     "chapter4"
     "chapter5-api"
-#    "chapter5-data-pipeline"
-#    "chapter5-event-sources"
-#    "chapter6"
-#    "chapter7"
-#    "chapter8-s3-errors"
+    "chapter5-data-pipeline"
+    "chapter5-event-sources"
+    "chapter6"
+    "chapter7"
+    "chapter8-s3-errors"
 )
 
 # Get short suffix for stack name (S3 bucket names have 63 char limit)
