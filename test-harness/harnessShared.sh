@@ -1,11 +1,6 @@
 #!/bin/bash
 # Shared configuration for test harness
 
-# Stack naming
-# Use GITHUB_RUN_ID if available (in CI), otherwise use "local"
-# Keep prefix short for S3 bucket name limits (63 chars)
-export STACK_PREFIX="lb-test-${GITHUB_RUN_ID:-local}"
-
 # Project root (parent of test-harness)
 export PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
@@ -15,11 +10,11 @@ export CHAPTERS=(
     "chapter3"
     "chapter4"
     "chapter5-api"
-    "chapter5-data-pipeline"
-    "chapter5-event-sources"
-    "chapter6"
-    "chapter7"
-    "chapter8-s3-errors"
+#    "chapter5-data-pipeline"
+#    "chapter5-event-sources"
+#    "chapter6"
+#    "chapter7"
+#    "chapter8-s3-errors"
 )
 
 # Get short suffix for stack name (S3 bucket names have 63 char limit)
@@ -43,7 +38,7 @@ get_stack_suffix() {
 get_stack_name() {
     local chapter="$1"
     local suffix=$(get_stack_suffix "$chapter")
-    echo "${STACK_PREFIX}-${suffix}"
+    echo "pal-${suffix}"
 }
 
 # Colors for output
