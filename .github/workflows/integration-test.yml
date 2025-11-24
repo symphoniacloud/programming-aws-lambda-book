@@ -11,9 +11,6 @@ permissions:
   id-token: write   # Required for OIDC
   contents: read
 
-env:
-  AWS_REGION: us-east-1
-
 jobs:
   integration-test:
     runs-on: ubuntu-latest
@@ -35,12 +32,11 @@ jobs:
       - uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::397589511426:role/account-wide-resources-GithubActionsRole-1CAIKQPYM5WD3
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: us-east-1
 
       - run: ./test-harness/deploy-all.sh
 
       - run: ./test-harness/test-all.sh
 
-# TODO - add this back when ready
-#      - if: always()
-#        run: ./test-harness/teardown-all.sh
+      - if: always()
+        run: ./test-harness/teardown-all.sh
